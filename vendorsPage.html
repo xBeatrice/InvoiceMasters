@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+
+<html>
+  <link rel="stylesheet" href="./vendorsPageStyle.css" />
+
+  <head>
+    <script
+      src="https://kit.fontawesome.com/bad63f900f.js"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth-compat.js"></script>
+  </head>
+
+  <script type="text/javascript" src="projectsStorageService.js"></script>
+
+  <body>
+    <div id="header">
+      <div id="websiteTitle">InvoiceMasters</div>
+      <div id="userDiv">
+        <button id="userBtn" onclick="toProfile()">
+          <i class="fa-solid fa-user"></i>
+        </button>
+      </div>
+    </div>
+
+    <button id="newVendorBtn" onclick="newVendorDialog()">
+      Add new vendor <i class="fa-solid fa-file-circle-plus"></i>
+    </button>
+
+    <div id="main"></div>
+
+    <div id="newVendorDialog">
+      <button id="closeBtn" class="closeBtn" onclick="closeDialog()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <label class="vendorLabel" for="vendorName"> Vendor name: </label>
+      <input class="vendorInput" id="vendorName" />
+
+      <label class="vendorLabel" for="vendorAdress"> Adress: </label>
+      <input class="vendorInput" id="vendorAdress" />
+
+      <label class="vendorLabel" for="vendorVAT"> VAT Number: </label>
+      <input class="vendorInput" id="vendorVAT" />
+
+      <label class="vendorLabel" for="vendorEmail"> Email: </label>
+      <input class="vendorInput" id="vendorEmail" />
+
+      <button id="addVendorDB" class="btnDB" onclick="addVendorDB()">
+        Add vendor
+      </button>
+    </div>
+
+    <div id="editDialog">
+      <button id="closeBtnEdit" class="closeBtn" onclick="closeDialog()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <label class="vendorLabel" for="vendorNameEdit"> Vendor name: </label>
+      <input class="vendorInput" id="vendorNameEdit" />
+
+      <label class="vendorLabel" for="vendorAdressEdit"> Adress: </label>
+      <input class="vendorInput" id="vendorAdressEdit" />
+
+      <label class="vendorLabel" for="vendorVATEdit"> VAT Number: </label>
+      <input class="vendorInput" id="vendorVATEdit" />
+
+      <label class="vendorLabel" for="vendorEmailEdit"> Email: </label>
+      <input class="vendorInput" id="vendorEmailEdit" />
+
+      <button id="editVendorDB" class="btnDB" onclick="editVendorDB()">
+        Save changes
+      </button>
+    </div>
+
+    <div id="deleteVendorDialog">
+      <button class="closeBtn" onclick="closeDialog()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <h2>Are you sure you want to delete this vendor?</h2>
+      <h5>This action cannot be undone.</h5>
+
+      <button class="deleteVendorBtn" onclick="deleteVendorDB()">Delete</button>
+    </div>
+
+    <script>
+      const toProfile = () => {
+        location.href = "./profilePage.html";
+      };
+
+      const newVendorDialog = () => {
+        const vendorDialog = document.getElementById("newVendorDialog");
+        vendorDialog.style.display = "inline-grid";
+      };
+
+      const closeDialog = () => {
+        const vendorDialog = document.getElementById("newVendorDialog");
+        vendorDialog.style.display = "none";
+        const editDialog = document.getElementById("editDialog");
+        editDialog.style.display = "none";
+        const deleteVendorDialog =
+          document.getElementById("deleteVendorDialog");
+        deleteVendorDialog.style.display = "none";
+      };
+
+      const addVendorDB = () => {
+        const vendorName = document.getElementById("vendorName").value;
+        const vendorAdress = document.getElementById("vendorAdress").value;
+        const vendorVAT = document.getElementById("vendorVAT").value;
+        const vendorEmail = document.getElementById("vendorEmail").value;
+
+        try {
+          newVendor(
+            vendorName,
+            vendorAdress,
+            vendorVAT,
+            vendorEmail,
+            currentUser
+          );
+          alert("Vendor added successfully");
+          closeDialog();
+          vendorsDOM();
+        } catch (error) {
+          console.log(error);
+        }
+      };
+
+      let currentVendor = "";
+      const editVendor = (event) => {
+        const whichVendorBtn = event.target.id;
+        const whichVendorBtnId = whichVendorBtn.split("-").pop();
+
+        currentVendor = vendorsInfo[whichVendorBtnId];
+
+        const editDialog = document.getElementById("editDialog");
+        editDialog.style.display = "grid";
+
+        document.getElementById("vendorNameEdit").value =
+          currentVendor.data.vendorName;
+        document.getElementById("vendorAdressEdit").value =
+          currentVendor.data.vendorAdress;
+        document.getElementById("vendorVATEdit").value =
+          currentVendor.data.vendorVAT;
+        document.getElementById("vendorEmailEdit").value =
+          currentVendor.data.vendorEmail;
+      };
+
+      const editVendorDB = () => {
+        const vendorId = currentVendor.id;
+
+        const name = document.getElementById("vendorNameEdit").value;
+        const adress = document.getElementById("vendorAdressEdit").value;
+        const VAT = document.getElementById("vendorVATEdit").value;
+        const email = document.getElementById("vendorEmailEdit").value;
+        try {
+          updateVendor(vendorId, name, adress, VAT, email);
+          const editDialog = document.getElementById("editDialog");
+          editDialog.style.display = "none";
+          vendorsDOM();
+        } catch (error) {
+          console.log(error);
+        }
+      };
+
+      const deleteVendor = (event) => {
+        const whichVendorBtn = event.target.id;
+        const whichVendorBtnId = whichVendorBtn.split("-").pop();
+
+        currentVendor = vendorsInfo[whichVendorBtnId];
+
+        const deleteVendorDialog =
+          document.getElementById("deleteVendorDialog");
+        deleteVendorDialog.style.display = "grid";
+      };
+
+      const deleteVendorDB = () => {
+        const vendorId = currentVendor.id;
+        try {
+          deleteVendorData(vendorId);
+          const deleteVendorDialog =
+            document.getElementById("deleteVendorDialog");
+          deleteVendorDialog.style.display = "none";
+          vendorsDOM();
+        } catch (error) {
+          console.log(error);
+        }
+      };
+
+      let vendorsWithId = [];
+      let vendorsInfo = [];
+
+      const vendorsDOM = () => {
+        vendorsWithId.length = 0;
+        vendorsInfo.length = 0;
+
+        getVendors().then((getVendorsQueryResult) => {
+          getVendorsQueryResult.forEach((doc) => {
+            vendorsWithId.push({ id: doc.id, data: doc.data() });
+            vendorsInfo = vendorsWithId.filter(
+              (vendor) => vendor.data.currentUser === currentUser
+            );
+
+            const table = document.createElement("table");
+
+            const headerRow = document.createElement("tr");
+            const headerNames = [
+              "Vendor Name",
+              "Adress",
+              "VAT Number",
+              "Email",
+              "Options",
+            ];
+
+            headerNames.forEach((headerName) => {
+              const headerCell = document.createElement("th");
+              headerCell.textContent = headerName;
+              headerRow.appendChild(headerCell);
+            });
+
+            table.appendChild(headerRow);
+
+            // Create the rows for each vendor
+            for (let i = 0; i < vendorsInfo.length; i++) {
+              let row = document.createElement("tr");
+              row.className = "rowClass";
+              row.setAttribute("id", "rowClass-" + i);
+
+              let cells = [
+                vendorsInfo[i].data.vendorName,
+                vendorsInfo[i].data.vendorAdress,
+                vendorsInfo[i].data.vendorVAT,
+                vendorsInfo[i].data.vendorEmail,
+              ];
+              cells.forEach((cellData) => {
+                const cell = document.createElement("td");
+                cell.textContent = cellData;
+                row.appendChild(cell);
+              });
+              table.appendChild(row);
+            }
+
+            // Add the table to the page
+            const main = document.getElementById("main");
+            main.innerHTML = "";
+            main.appendChild(table);
+          });
+          const user = document.getElementById("userDiv");
+          const userName = document.createElement("span");
+          userName.textContent = currentUser.split("@", 1);
+          user.appendChild(userName);
+          optionsAdd();
+        });
+      };
+
+      const optionsAdd = () => {
+        let trs = document.getElementsByTagName("table")[0].rows;
+
+        for (let i = 1; i < trs.length; i++) {
+          let td = document.createElement("td");
+          td.classList.add("optionsTd");
+          // pune id cu nr si cauta dupa nr ca sa gasesti vendorul si sa modifici/stergi
+          trs[i].appendChild(td);
+        }
+        const optionsTdCollection =
+          document.getElementsByClassName("optionsTd");
+        for (let j = 0; j < optionsTdCollection.length; j++) {
+          let editBtn = document.createElement("i");
+
+          editBtn.classList.add("fa-solid");
+          editBtn.classList.add("fa-pen-to-square");
+          editBtn.classList.add("optionsBtn");
+          editBtn.setAttribute("id", "editBtn-" + j);
+          editBtn.addEventListener("click", editVendor);
+
+          let deleteBtn = document.createElement("i");
+
+          deleteBtn.classList.add("fa-solid");
+          deleteBtn.classList.add("fa-trash");
+          deleteBtn.classList.add("optionsBtn");
+          deleteBtn.setAttribute("id", "deleteBtn-" + j);
+          deleteBtn.addEventListener("click", deleteVendor);
+
+          optionsTdCollection[j].appendChild(editBtn);
+          optionsTdCollection[j].appendChild(deleteBtn);
+        }
+      };
+
+      vendorsDOM();
+      // setTimeout(optionsAdd, 1000);
+    </script>
+  </body>
+</html>

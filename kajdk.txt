@@ -1,0 +1,7 @@
+TEMPLATE
+{
+   name
+   description
+   content
+   selectedProducts: ['prodID1','prodID2']
+}

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+
+<html>
+  <link rel="stylesheet" href="./generatedDocsStyle.css" />
+
+  <head>
+    <script
+      src="https://kit.fontawesome.com/bad63f900f.js"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth-compat.js"></script>
+  </head>
+
+  <script type="text/javascript" src="projectsStorageService.js"></script>
+
+  <body>
+    <div id="header">
+      <div id="websiteTitle">InvoiceMasters</div>
+      <div id="userDiv">
+        <button id="userBtn" onclick="toProfile()">
+          <i class="fa-solid fa-user"></i>
+        </button>
+        Username
+      </div>
+    </div>
+    <div id="main"></div>
+
+    <script>
+      let vendorsWithId = [];
+      let vendorsInfo = [];
+      let templateId = location.href.split("?").pop();
+      let allTemplatesId = [];
+      let currentTemplate = [];
+      let invoicePreview = "";
+      let companyData = [];
+      let companyInfo = {};
+      let companyWithId = [];
+
+      let companyName = "";
+      let companyAdress = "";
+      let companyVAT = "";
+      let companyIBAN = "";
+
+      const toProfile = () => {
+        location.href = "./profilePage.html";
+      };
+        const user = document.getElementById("user");
+        const userName = document.createElement("span");
+        userName.textContent = currentUser.split("@", 1);
+        user.appendChild(userName);
+
+      const docsGenerator = () => {
+        vendorsWithId.length = 0;
+        vendorsInfo.length = 0;
+
+        getCompanyInfo().then((getCompaniesQueryResult) => {
+          getCompaniesQueryResult.forEach((doc) => {
+            companyWithId.push({ id: doc.id, data: doc.data() });
+            companyInfo = companyWithId.filter(
+              (project) => project.data.currentUser === currentUser
+            );
+          });
+
+          getVendors().then((getVendorsQueryResult) => {
+            getVendorsQueryResult.forEach((doc) => {
+              vendorsWithId.push({ id: doc.id, data: doc.data() });
+              vendorsInfo = vendorsWithId.filter(
+                (vendor) => vendor.data.currentUser === currentUser
+              );
+            });
+
+            for (let index = 0; index < vendorsInfo.length; index++) {
+              const docPage = document.createElement("div");
+              docPage.innerHTML = currentTemplate[0].data.content;
+
+              const spanElements = docPage.querySelectorAll("span");
+
+              const btnElements = docPage.querySelectorAll("button"); // add class for elements that should be hidden in invoice
+
+              for (let i = 0; i < btnElements.length; i++) {
+                btnElements[i].style.visibility = "hidden";
+              }
+
+              for (let j = 0; j < spanElements.length; j++) {
+                const value = spanElements[j].textContent;
+                const category = spanElements[j].attributes.category.value;
+
+                if (category === "company") {
+                  spanElements[j].textContent = companyInfo[0].data[value];
+                  docPage.classList.add("docPage");
+                  main.appendChild(docPage);
+                }
+                if (category === "vendor") {
+                  spanElements[j].textContent = vendorsInfo[index].data[value];
+                  docPage.classList.add("docPage");
+                  main.appendChild(docPage);
+                }
+              }
+            }
+          });
+        });
+      };
+
+      const templatesDB = () => {
+        getTemplates()
+          .then((getTemplatesQueryResult) => {
+            getTemplatesQueryResult.forEach((doc) => {
+              allTemplatesId.push({ id: doc.id, data: doc.data() });
+              currentTemplate = allTemplatesId.filter(
+                (template) => template.id === templateId
+              );
+            });
+          })
+          .then(docsGenerator());
+      };
+      templatesDB();
+    </script>
+  </body>
+</html>

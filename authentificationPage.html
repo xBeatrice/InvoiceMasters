@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+
+<html>
+<link rel="stylesheet" href="./authentificationPageStyle.css">
+
+  <head>
+      <script src="https://kit.fontawesome.com/bad63f900f.js" crossorigin="anonymous"></script>
+      <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app-compat.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore-compat.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth-compat.js"></script>
+
+  </head>
+
+<script type="text/javascript" src='projectsStorageService.js'> </script>
+
+
+  <body>
+
+<div id='main'>
+
+	<div id='authentificationDialog'>
+		<h3> Do you already have an account? </h3>
+		<div id='authDialogBtnsCase'>
+			<button class ='authDialogBtns'id='signInBtn' onclick='signInDialog()'> I have an account </button>
+			<button class ='authDialogBtns'id='newAccBtn' onclick='newAccDialog()'> Create a new account </button>
+		</div>
+	</div>
+
+	<div id='signInDialog'>
+		<h3> Enter your account! </h3>
+		<label class='text' for='signInEmail'> Email: </label>
+		<input class='input' id='signInEmail'> 
+		<label class='text'for='signInPassword'> Password: </label>
+		<input class='passInput' type='password'id='signInPassword'>
+		<button id='signInBtnDB' onclick='signIn()'> Sign in </button>
+		<p class='goBack' onclick='goBack()'> Go back </p>
+	</div>
+
+	<div id='newAccDialog'>
+		<h3> Fill in the details below! </h3>
+		<label class='text'for='newAccEmail'> Email: </label>
+		<input class='input' id='newAccEmail'> 
+		<label class='text'for='newAccPassword'> Password: </label>
+		<input class='passInput' type='password' id='newAccPassword'>
+		<button id='newAccBtnDB' onclick='register()'> Create account </button>
+		<p class='goBack' onclick='goBack()'> Go back </p>
+	</div>
+</div>
+
+</div>
+
+<script>
+const signInDialog=()=>{
+ 	const authentificationDialog=document.getElementById('authentificationDialog')
+ 	authentificationDialog.style.display='none'
+
+ 	const signInDialog=document.getElementById('signInDialog')
+ 	signInDialog.style.display='grid'
+}
+
+const newAccDialog=()=>{
+ 	const authentificationDialog=document.getElementById('authentificationDialog')
+ 	authentificationDialog.style.display='none'
+
+ 	const newAccDialog=document.getElementById('newAccDialog')
+ 	newAccDialog.style.display='grid'
+}
+
+const goBack=()=>{
+	location.reload()
+}
+
+
+
+
+
+</script>
+  </body>
+
+  </html>
