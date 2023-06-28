@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+
+<html>
+  <link rel="stylesheet" href="./projectsPageStyle.css" />
+
+  <head>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth-compat.js"></script>
+
+    <script
+      src="https://kit.fontawesome.com/bad63f900f.js"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+
+  <body>
+    <div>
+      <div id="header">
+        <div id="websiteTitle">InvoiceMasters</div>
+        <div id="user">
+          <button id="userBtn" onclick="toProfile()">
+            <i class="fa-solid fa-user"></i>
+          </button>
+          Username
+        </div>
+      </div>
+
+      <div id="categories">
+        <button id="projectsBtn" class="categoriesBtns">Projects</button>
+        <div id="displayBtnsCase">
+          <button id="listBtn" class="displayBtns" onclick="showList()">
+            <i class="fa-solid fa-list"> </i>
+          </button>
+          <button id="gridBtn" class="displayBtns" onclick="showGrid()">
+            <i class="fa-solid fa-grip"> </i>
+          </button>
+        </div>
+      </div>
+
+      <div id="projectsMain" class="projectsMain">
+        <!--     <button id='newProjectBtn' onclick='showNewDialog()'> <i class="fa-solid fa-square-plus"></i> Add new project </button> -->
+      </div>
+
+      <div id="addProjectDialog">
+        <button class="closeBtn" onclick="closeDialog()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <label for="name"> Name: </label>
+        <input type="text" id="name" class="input" /> <br />
+        <br />
+        <label for="description"> Description: </label>
+        <input type="text" id="description" class="input" /> <br />
+        <br />
+
+        <button class="createBtn" onclick="postProject()">Create</button>
+      </div>
+
+      <div id="editProjectDialog">
+        <button class="closeBtn" onclick="closeDialog()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <label for="editName"> Name: </label>
+        <input type="text" id="editName" class="input" /> <br />
+        <br />
+        <label for="editDescription"> Description: </label>
+        <input type="text" id="editDescription" class="input" /> <br />
+        <br />
+
+        <button class="createBtn" onclick="changeProject()">Edit</button>
+      </div>
+
+      <div id="deleteProjectDialog">
+        <button class="closeBtn" onclick="closeDialog()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <h2>Are you sure you want to delete this project?</h2>
+        <h5>This action cannot be undone.</h5>
+
+        <button class="deleteProjBtn" onclick="deleteProjectData()">
+          Delete
+        </button>
+      </div>
+    </div>
+
+    <script type="text/javascript" src="projectsStorageService.js"></script>
+
+    <script>
+      let currentProject = {};
+      var today = new Date();
+      var dd = String(today.getDate()).padStart(2, "0");
+      var mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
+      var yyyy = today.getFullYear();
+
+      today = dd + "/" + mm + "/" + yyyy;
+
+      let projects = [];
+
+      const toProfile = () => {
+        location.href = "profilePage.html";
+      };
+
+      const listBtn = document.getElementById("listBtn");
+      const gridBtn = document.getElementById("gridBtn");
+      gridBtn.style.backgroundColor = "white";
+      gridBtn.style.color = "green";
+
+      const showGrid = () => {
+        if (gridBtn.style.color != "green") {
+          gridBtn.style.color = "green";
+          gridBtn.style.backgroundColor = "white";
+          listBtn.style.color = "white";
+          listBtn.style.backgroundColor = "green";
+
+          const projectsMain = document.getElementById("projectsMain");
+          const newProjectBtn = document.getElementById("newProjectBtn");
+          const projectTextCollection = document.getElementsByClassName(
+            "projectTextClassOthersList"
+          );
+          const projectCaseCollection = document.getElementsByClassName(
+            "projectCaseClassList"
+          );
+          const editBtnCollection =
+            document.getElementsByClassName("editBtnList");
+
+          projectsMain.classList.remove("projectsMainList");
+          projectsMain.classList.add("projectsMain");
+          newProjectBtn.style.height = "250px";
+
+          for (let i = 0; i < projectTextCollection.length; i++) {
+            projectTextCollection[i].classList.add("projectTextClassOthers");
+          }
+
+          const projectTextCollection2 = document.getElementsByClassName(
+            "projectTextClassOthers"
+          );
+
+          for (let i = 0; i < projectTextCollection2.length; i++) {
+            projectTextCollection2[i].classList.remove(
+              "projectTextClassOthersList"
+            );
+          }
+
+          for (let i = 0; i < projectCaseCollection.length; i++) {
+            projectCaseCollection[i].classList.add("projectCaseClass");
+          }
+          const projectCaseCollection2 =
+            document.getElementsByClassName("projectCaseClass");
+
+          for (let i = 0; i < projectCaseCollection2.length; i++) {
+            projectCaseCollection2[i].classList.remove("projectCaseClassList");
+          }
+          for (let i = 0; i < editBtnCollection.length; i++) {
+            editBtnCollection[i].classList.add("editBtn");
+          }
+          const editBtnCollection2 = document.getElementsByClassName("editBtn");
+          for (let i = 0; i < editBtnCollection2.length; i++) {
+            editBtnCollection2[i].classList.remove("editBtnList");
+          }
+        }
+      };
+
+      const showList = () => {
+        if (listBtn.style.color != "green") {
+          listBtn.style.color = "green";
+          listBtn.style.backgroundColor = "white";
+          gridBtn.style.color = "white";
+          gridBtn.style.backgroundColor = "green";
+
+          const projectsMain = document.getElementById("projectsMain");
+          const newProjectBtn = document.getElementById("newProjectBtn");
+          const projectTextCollection = document.getElementsByClassName(
+            "projectTextClassOthers"
+          );
+          const projectCaseCollection =
+            document.getElementsByClassName("projectCaseClass");
+          const editBtnCollection = document.getElementsByClassName("editBtn");
+
+          newProjectBtn.style.height = "100px";
+          projectsMain.classList.remove("projectsMain");
+          projectsMain.classList.add("projectsMainList");
+
+          for (let i = 0; i < projectTextCollection.length; i++) {
+            projectTextCollection[i].className = "projectTextClassOthersList";
+          }
+
+          for (let i = 0; i < projectCaseCollection.length; i++) {
+            projectCaseCollection[i].classList.add("projectCaseClassList");
+          }
+          const projectCaseCollection2 = document.getElementsByClassName(
+            "projectCaseClassList"
+          );
+
+          for (let i = 0; i < projectCaseCollection2.length; i++) {
+            projectCaseCollection2[i].classList.remove("projectCaseClass");
+          }
+          for (let i = 0; i < editBtnCollection.length; i++) {
+            editBtnCollection[i].classList.add("editBtnList");
+          }
+          const editBtnCollection2 =
+            document.getElementsByClassName("editBtnList");
+          for (let i = 0; i < editBtnCollection2.length; i++) {
+            editBtnCollection2[i].classList.remove("editBtn");
+          }
+        }
+      };
+
+      const showDropdown = (e) => {
+        const dropdown = e.target.parentElement.querySelector(".dropdown");
+
+        if (dropdown.style.display == "block") {
+          dropdown.style.display = "none";
+        } else {
+          dropdown.style.display = "block";
+        }
+      };
+
+      window.onclick = (event) => {
+        const dropdown = event.target.parentElement.querySelector(".dropdown");
+
+        if (
+          !event.target.matches(".editBtn") &&
+          !event.target.matches(".editBtnList") &&
+          dropdown
+        ) {
+          dropdown.style.display = "none";
+        }
+      };
+
+      let nameElement = "";
+
+      let descriptionElement = "";
+
+      const editProject = (event) => {
+        const whichProjectBtn = event.target.id;
+        const whichProjectBtnId = whichProjectBtn.split("-").pop();
+
+        currentProject = projects[whichProjectBtnId];
+
+        const editDialog = document.getElementById("editProjectDialog");
+        editDialog.style.display = "grid";
+      };
+
+      const changeProject = () => {
+        const projectId = currentProject.id;
+
+        const newName = document.getElementById("editName").value;
+        const newDescription = document.getElementById("editDescription").value;
+        try {
+          editProjectData(projectId, today, newName, newDescription);
+          const editDialog = document.getElementById("editProjectDialog");
+          editDialog.style.display = "none";
+          projectsDB();
+        } catch (error) {
+          console.log(error);
+        }
+      };
+
+      const deleteProject = (event) => {
+        const whichProjectBtn = event.target.id;
+        const whichProjectBtnId = whichProjectBtn.split("-").pop();
+
+        currentProject = projects[whichProjectBtnId];
+
+        const deleteDialog = document.getElementById("deleteProjectDialog");
+        deleteDialog.style.display = "grid";
+      };
+
+      const deleteProjectData = () => {
+        const projectId = currentProject.id;
+
+        try {
+          deleteProjectDB(projectId);
+          const deleteDialog = document.getElementById("deleteProjectDialog");
+          deleteDialog.style.display = "none";
+          projectsDB();
+        } catch (error) {
+          console.log(error);
+        }
+      };
+
+      const enterProject = (event) => {
+        const whichProjectBtn = event.target.id;
+        const whichProjectBtnId = whichProjectBtn.split("-").pop();
+        currentProject = projects[whichProjectBtnId];
+        const projectId = currentProject.id;
+
+        location.href = "templatesPage.html" + "?" + projectId;
+      };
+
+      const allProjectsDOM = () => {
+        const projectsMain = document.getElementById("projectsMain");
+
+        projectsMain.innerHTML = "";
+
+        const newProjectBtn = document.createElement("button");
+        newProjectBtn.setAttribute("id", "newProjectBtn");
+        newProjectBtn.addEventListener("click", showNewDialog);
+        newProjectBtn.textContent = "Add new project ";
+
+        const plusBtn = document.createElement("i");
+        plusBtn.classList.add("fa-solid");
+        plusBtn.classList.add("fa-square-plus");
+        plusBtn.classList.add("plusBtn");
+
+        newProjectBtn.appendChild(plusBtn);
+
+        projectsMain.appendChild(newProjectBtn);
+        //   <button id='newProjectBtn' onclick='showNewDialog()'> <i class="fa-solid fa-square-plus"></i> Add new project </button>
+
+        projects.forEach((project, index) => {
+          const projectCase = document.createElement("div");
+          projectCase.className = "projectCaseClass";
+          projectCase.setAttribute("id", "projectCaseClass-" + index);
+
+          const nameElement = document.createElement("span");
+          nameElement.textContent = project.data.name;
+          nameElement.className = "projectTextClassName";
+          nameElement.setAttribute("id", "nameElement-" + index);
+          nameElement.addEventListener("click", enterProject);
+          const dropdownContainer = document.createElement("div");
+          dropdownContainer.setAttribute("id", "dropdown-container-" + index);
+          dropdownContainer.className = "dropdownContainer";
+          const dropdown = document.createElement("div");
+          dropdown.setAttribute("id", "dropdown-" + index);
+          dropdown.className = "dropdown";
+          const listEdit = document.createElement("li");
+          listEdit.setAttribute("id", "listEdit-" + index);
+          listEdit.textContent = "Edit";
+          listEdit.addEventListener("click", editProject);
+          const listDelete = document.createElement("li");
+          listDelete.textContent = "Delete";
+          listDelete.addEventListener("click", deleteProject);
+          listDelete.setAttribute("id", "listDelete-" + index);
+
+          const editBtn = document.createElement("i");
+          editBtn.classList.add("fa-solid");
+          editBtn.classList.add("fa-ellipsis-vertical");
+          editBtn.setAttribute("id", "editBtn-" + index);
+          editBtn.classList.add("editBtn");
+          editBtn.addEventListener("click", showDropdown);
+
+          const descriptionElement = document.createElement("span");
+          descriptionElement.textContent = project.data.description;
+          descriptionElement.className = "projectTextClassOthers";
+          const dateElement = document.createElement("span");
+          dateElement.textContent = project.data.date;
+          dateElement.className = "projectTextClassOthers";
+
+          dropdownContainer.appendChild(editBtn);
+          dropdownContainer.appendChild(dropdown);
+          dropdown.appendChild(listEdit);
+          dropdown.appendChild(listDelete);
+          projectCase.appendChild(dropdownContainer);
+          projectCase.appendChild(nameElement);
+          projectCase.appendChild(descriptionElement);
+          projectCase.appendChild(dateElement);
+          projectsMain.appendChild(projectCase);
+        });
+      };
+
+      const showNewDialog = () => {
+        const addProjectDialog = document.getElementById("addProjectDialog");
+        addProjectDialog.style.display = "grid";
+      };
+
+      const closeDialog = () => {
+        const addProjectDialog = document.getElementById("addProjectDialog");
+        addProjectDialog.style.display = "none";
+        const editProjectDialog = document.getElementById("editProjectDialog");
+        editProjectDialog.style.display = "none";
+        const deleteDialog = document.getElementById("deleteProjectDialog");
+        deleteDialog.style.display = "none";
+      };
+
+      let projectID = "";
+
+      const postProject = () => {
+        const projectName = document.getElementById("name").value;
+        const projectDescription = document.getElementById("description").value;
+        try {
+          newProject(projectName, projectDescription, today, currentUser).then(
+            (queryResult) => {
+              projectID = queryResult.id;
+            }
+          );
+          const addProjectDialog = document.getElementById("addProjectDialog");
+          addProjectDialog.style.display = "none";
+          projectsDB();
+        } catch (error) {
+          console.log(error);
+        }
+      };
+
+      let projectsId = [];
+      const projectsDB = () => {
+        projectsId.length = 0;
+        getProjects().then((getProjectsQueryResult) => {
+          getProjectsQueryResult.forEach((doc) => {
+            projectsId.push({ id: doc.id, data: doc.data() });
+            projects = projectsId.filter(
+              (project) => project.data.currentUser === currentUser
+            );
+            allProjectsDOM();
+          });
+        });
+      };
+      projectsDB();
+    </script>
+  </body>
+</html>

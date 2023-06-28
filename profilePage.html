@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+
+<html>
+  <link rel="stylesheet" href="./profilePageStyle.css" />
+
+  <head>
+    <script
+      src="https://kit.fontawesome.com/bad63f900f.js"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth-compat.js"></script>
+  </head>
+
+  <script type="text/javascript" src="projectsStorageService.js"></script>
+
+  <body>
+    <div id="header">
+      <div id="websiteTitle">InvoiceMasters</div>
+      <div id="user">
+        <button id="userBtn"><i class="fa-solid fa-user"></i></button> Username
+      </div>
+    </div>
+
+    <div id="main">
+      <div class="infoBox">
+        <p class="text infoHead">My organization</p>
+        <div id="firstTimeAcc">
+          <p id="enterDataText" class="text">Enter your company data!</p>
+          <label for="companyName"> Name: </label>
+          <input id="companyName" />
+          <label for="companyAdress"> Adress: </label>
+          <input id="companyAdress" />
+          <label for="companyVAT"> VAT no.: </label>
+          <input id="companyVAT" />
+          <label for="companyIBAN"> IBAN: </label>
+          <input id="companyIBAN" />
+
+          <button
+            id="addCompanyInfoBtn"
+            class="infoBtns"
+            onclick="addNewCompany()"
+          >
+            Add company information
+          </button>
+        </div>
+      </div>
+
+      <div class="infoBox">
+        <p class="text infoHead">My profile</p>
+        <p class="text" id="myEmail"></p>
+        <button class="infoBtns" id="projectsBtn" onclick="goToProjects()">
+          My projects
+        </button>
+        <button class="infoBtns" id="productsBtn" onclick="goToProducts()">
+          My products
+        </button>
+        <button class="infoBtns" id="logOutBtn" onclick="goToLogOut()">
+          Log out
+        </button>
+        <button class="infoBtns" id="changePassBtn" onclick="goToChangePass()">
+          Change Password
+        </button>
+
+        <i class="fa-solid fa-otter otter"></i>
+      </div>
+    </div>
+
+    <div id="logOutDialog">
+      <button class="closeBtn" onclick="closeDialog()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <p class="text">Are you sure you want to log out?</p>
+      <button id="logOutBtnDB" onclick="logOut()">
+        <i class="fa-solid fa-right-from-bracket"></i> Log out
+      </button>
+    </div>
+
+    <script>
+      const addNewCompany = () => {
+        const companyName = document.getElementById("companyName").value;
+        const companyAdress = document.getElementById("companyAdress").value;
+        const companyVAT = document.getElementById("companyVAT").value;
+        const companyIBAN = document.getElementById("companyIBAN").value;
+
+        try {
+          newCompany(
+            companyName,
+            companyAdress,
+            companyVAT,
+            companyIBAN,
+            currentUser
+          );
+        } catch (error) {
+          console.log(error);
+        }
+      };
+
+      const updateCompanyInfoDB = () => {
+        let companyId = companyWithId[0].id;
+
+        const name = document.getElementById("companyName").value;
+        const adress = document.getElementById("companyAdress").value;
+        const VAT = document.getElementById("companyVAT").value;
+        const IBAN = document.getElementById("companyIBAN").value;
+
+        try {
+          updateCompanyInfo(companyId, name, adress, VAT, IBAN, currentUser);
+          alert("Updated Successfully");
+        } catch (error) {
+          console.log(error);
+        }
+      };
+
+      let companyInfo = {};
+      let companyWithId = [];
+
+      const companyDOM = () => {
+        getCompanyInfo().then((getCompaniesQueryResult) => {
+          getCompaniesQueryResult.forEach((doc) => {
+            companyWithId.push({ id: doc.id, data: doc.data() });
+            companyInfo = companyWithId.filter(
+              (project) => project.data.currentUser === currentUser
+            );
+
+            let name = companyInfo[0].data.companyName;
+            document.getElementById("companyName").value = name;
+
+            let adress = companyInfo[0].data.companyAdress;
+            document.getElementById("companyAdress").value = adress;
+
+            let VAT = companyInfo[0].data.companyVAT;
+            document.getElementById("companyVAT").value = VAT;
+
+            let IBAN = companyInfo[0].data.companyIBAN;
+            document.getElementById("companyIBAN").value = IBAN;
+
+            const modifyBtn = document.getElementById("addCompanyInfoBtn");
+            modifyBtn.textContent = "Edit Company Data";
+            modifyBtn.removeAttribute("onclick");
+            modifyBtn.addEventListener("click", updateCompanyInfoDB);
+          });
+        });
+      };
+
+      companyDOM();
+
+      const profileMaker = () => {
+        const myEmail = document.getElementById("myEmail");
+        myEmail.innerText = currentUser;
+      };
+
+      setTimeout(profileMaker, 1000);
+
+      const goToProducts = () => {
+        location.href = "productsPage.html";
+      };
+
+      const goToProjects = () => {
+        location.href = "projectsPage.html";
+      };
+
+      const goToLogOut = () => {
+        const logOutDialog = document.getElementById("logOutDialog");
+        logOutDialog.style.display = "grid";
+      };
+
+      const closeDialog = () => {
+        const logOutDialog = document.getElementById("logOutDialog");
+        logOutDialog.style.display = "none";
+      };
+
+      const goToChangePass = () => {};
+    </script>
+  </body>
+</html>

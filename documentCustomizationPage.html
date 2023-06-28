@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+
+<html>
+  <link rel="stylesheet" href="./documentCustomizationPageStyle.css" />
+
+  <head>
+    <script
+      src="https://kit.fontawesome.com/bad63f900f.js"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth-compat.js"></script>
+  </head>
+
+  <body>
+    <div id="header">
+      <div id="websiteTitle">InvoiceMasters</div>
+      <div id="user">
+        <button id="userBtn" onclick="toProfile()">
+          <i class="fa-solid fa-user"></i>
+        </button>
+        Username
+      </div>
+    </div>
+
+    <!-- <div id="categories">
+      <button id="projectsBtn" class="categoriesBtns">Projects</button>
+      <button id="pendingBtn" class="categoriesBtns">Pending</button>
+      <button id="processedBtn" class="categoriesBtns">Processed</button>
+    </div> -->
+
+    <div id="currentProject">
+      <div id="currentProjectName"></div>
+      <div id="projectBtnsDiv">
+        <button id="saveBtn" class="projectBtns" onclick="saveTemplate()">
+          Save <i class="fa-solid fa-floppy-disk"></i>
+        </button>
+        <button id="deleteBtn" class="projectBtns" onclick="showDeleteDialog()">
+          Delete <i class="fa-solid fa-trash"></i>
+        </button>
+        <button id="previewBtn" class="projectBtns" onclick="previewTemplate()">
+          Preview <i class="fa-solid fa-file-pdf"></i>
+        </button>
+      </div>
+    </div>
+
+    <div id="invoiceBuilder">
+      <div id="invoicePage">
+        <div id="invoiceOptions">
+          <button
+            id="paragraphBtn"
+            onclick="addParagraph()"
+            class="invoiceBtns"
+          >
+            <i class="fa-solid fa-paragraph"></i>
+          </button>
+          <button id="tableBtn" onclick="addTable()" class="invoiceBtns">
+            <i class="fa-solid fa-table"></i>
+          </button>
+          <button id="imageBtn" onclick="addImage()" class="invoiceBtns">
+            <i class="fa-solid fa-image"></i>
+          </button>
+        </div>
+        <div id="mainInvoice">
+          <div id="invoiceHeader" class="invoicePart">
+            <button class="addBtn" id="headerBtn">
+              <i class="fa-solid fa-plus"></i>
+            </button>
+          </div>
+          <div id="invoiceMain" class="invoicePart">
+            <button class="addBtn" id="mainBtn">
+              <i class="fa-solid fa-plus"></i>
+            </button>
+          </div>
+          <div id="invoiceFooter" class="invoicePart">
+            <button class="addBtn" id="footerBtn">
+              <i class="fa-solid fa-plus"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div id="invoiceForm">
+        <div id="tableEditor"></div>
+        <div id="paragraphEditor">
+          <h3>Paragraph</h3>
+          <label for="fontFamily"> Font: </label>
+          <select
+            size="1"
+            name="fontSelector"
+            id="fontSelector"
+            class="form-control"
+            onchange="handleTextBox()"
+          >
+            <option
+              value="Verdana, sans-serif"
+              style="font-family: Verdana, sans-serif"
+            >
+              Verdana
+            </option>
+            <option
+              value="Arial, Helvetica, sans-serif"
+              style="font-family: Arial, Helvetica, sans-serif"
+            >
+              Arial
+            </option>
+            <option
+              value="Monaco, monospace"
+              style="font-family: Monaco, monospace"
+            >
+              Monaco
+            </option>
+          </select>
+
+          <label for="textOptions"> Text options: </label>
+          <div id="textOptions">
+            <button
+              id="normalTextBtn"
+              value="normal"
+              onclick="applyFontWeight(this.id)"
+              class="fontWeightBtns"
+            >
+              <i class="fa-solid fa-font"> </i>
+            </button>
+            <button
+              id="boldTextBtn"
+              value="bold"
+              onclick="applyFontWeight(this.id)"
+              class="fontWeightBtns"
+            >
+              <i class="fa-solid fa-bold"> </i>
+            </button>
+            <button
+              id="italicTextBtn"
+              value="italic"
+              onclick="applyFontWeight(this.id)"
+              class="fontWeightBtns"
+            >
+              <i class="fa-solid fa-italic"></i>
+            </button>
+            <button
+              id="underlineBtn"
+              value="underline"
+              onclick="applyUnderline()"
+              class="underlineBtn"
+            >
+              <i class="fa-solid fa-underline"></i>
+            </button>
+          </div>
+
+          <label for="textAlign"> Align text: </label>
+          <div id="textAlign">
+            <button
+              id="leftBtn"
+              value="left"
+              onclick="applyTextAlign(this.id)"
+              class="textAlignBtns"
+            >
+              <i class="fa-solid fa-align-left"></i>
+            </button>
+            <button
+              id="centerBtn"
+              value="center"
+              onclick="applyTextAlign(this.id)"
+              class="textAlignBtns"
+            >
+              <i class="fa-solid fa-align-center"></i>
+            </button>
+            <button
+              id="rightBtn"
+              value="right"
+              onclick="applyTextAlign(this.id)"
+              class="textAlignBtns"
+            >
+              <i class="fa-solid fa-align-right"></i>
+            </button>
+          </div>
+
+          <label for="fontSize"> Size: </label>
+          <select
+            size="1"
+            name="fontSizeSelector"
+            id="fontSizeSelector"
+            class="form-control"
+            onchange="handleTextBox()"
+          >
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+            <option value="14">14</option>
+            <option value="16">16</option>
+            <option value="18">18</option>
+            <option value="20">20</option>
+            <option value="22">22</option>
+            <option value="24">24</option>
+            <option value="26">26</option>
+            <option value="28">28</option>
+            <option value="36">36</option>
+            <option value="48">48</option>
+          </select>
+          <button
+            id="companyDataBtn"
+            class="companyDataBtn"
+            onclick="showCompanyDialog()"
+          >
+            Add company data <i class="fa-solid fa-building"></i>
+          </button>
+          <button
+            id="vendorDataBtn"
+            class="vendorDataBtn"
+            onclick="showVendorDialog()"
+          >
+            Add vendor data <i class="fa-solid fa-people-roof"></i>
+          </button>
+          <label for="paragraphText"> Write here: </label>
+          <input type="text" id="paragraphText" class="textBox" />
+          <button class="applyBtn" onclick="applyParagraph()">Apply</button>
+        </div>
+      </div>
+
+      <div id="companyDialog">
+        <button id="closeBtn" onclick="closeDialog()">
+          <i class="fa-solid fa-xmark"> </i>
+        </button>
+        <p>Select:</p>
+        <button
+          id="companyName"
+          class="companyBtns"
+          onclick="insertAtCursor('company', this.id)"
+        >
+          Name
+        </button>
+        <button
+          id="companyAdress"
+          class="companyBtns"
+          onclick="insertAtCursor('company', this.id)"
+        >
+          Adress
+        </button>
+        <button
+          id="companyVAT"
+          class="companyBtns"
+          onclick="insertAtCursor('company', this.id)"
+        >
+          VAT no.
+        </button>
+        <button
+          id="companyIBAN"
+          class="companyBtns"
+          onclick="insertAtCursor('company', this.id)"
+        >
+          IBAN
+        </button>
+      </div>
+
+      <div id="vendorDialog">
+        <button id="closeBtn" onclick="closeDialog()">
+          <i class="fa-solid fa-xmark"> </i>
+        </button>
+        <p>Select:</p>
+        <button
+          id="vendorName"
+          class="companyBtns"
+          onclick="insertAtCursor('vendor', this.id)"
+        >
+          Name
+        </button>
+        <button
+          id="vendorAdress"
+          class="companyBtns"
+          onclick="insertAtCursor('vendor', this.id)"
+        >
+          Adress
+        </button>
+        <button
+          id="vendorVAT"
+          class="companyBtns"
+          onclick="insertAtCursor('vendor', this.id)"
+        >
+          VAT no.
+        </button>
+        <button
+          id="vendorEmail"
+          class="companyBtns"
+          onclick="insertAtCursor('vendor', this.id)"
+        >
+          Email
+        </button>
+      </div>
+
+      <div id="deleteDialog">
+        <button id="closeBtn" onclick="closeDialog()">
+          <i class="fa-solid fa-xmark"> </i>
+        </button>
+        <h3>Are you sure you want to delete this template?</h3>
+        <h5>This cannot be undone.</h5>
+        <button id="deleteBtnDB" onclick="deleteTemplate()">
+          Delete <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
+    </div>
+
+    <script type="text/javascript" src="projectsStorageService.js"></script>
+
+    <script>
+      let currentBtn = "";
+      let pressedBtn = "";
+
+      let templateId = location.href.split("?").pop();
+      let allTemplatesId = [];
+      let currentTemplate = [];
+      const currentParagraph = {};
+      let selectedProds = [];
+      let chosenProductsCollection = [];
+
+      const toProfile = () => {
+        location.href = "profilePage.html";
+      };
+
+      const insertAtCursor = (name, value) => {
+        const text = `#${name}/${value}`;
+
+        const myField = document.getElementById("paragraphText");
+
+        if (myField.selectionStart || myField.selectionStart == "0") {
+          const startPos = myField.selectionStart;
+          const endPos = myField.selectionEnd;
+          myField.value =
+            myField.value.substring(0, startPos) +
+            " " +
+            text +
+            myField.value.substring(endPos, myField.value.length);
+        } else {
+          myField.value += text;
+        }
+      };
+
+      const templatesDB = () => {
+        getTemplates().then((getTemplatesQueryResult) => {
+          getTemplatesQueryResult.forEach((doc) => {
+            allTemplatesId.push({ id: doc.id, data: doc.data() });
+            currentTemplate = allTemplatesId.filter(
+              (template) => template.id === templateId
+            );
+          });
+          retrieveTemplate();
+          addClickable();
+        });
+      };
+      templatesDB();
+
+      const retrieveTemplate = () => {
+        if (currentTemplate[0].data.content != undefined) {
+          const mainInvoice = document.getElementById("mainInvoice");
+          mainInvoice.innerHTML = currentTemplate[0].data.content;
+          templateTitle.textContent =
+            "Template: " + currentTemplate[0].data.name;
+        }
+        const addBtnCollection = document.getElementsByClassName("addBtn");
+        for (let i = 0; i < addBtnCollection.length; i++) {
+          addBtnCollection[i].addEventListener("click", addElement);
+        }
+        templateTitle.textContent = "Template: " + currentTemplate[0].data.name;
+      };
+
+      const previewTemplate = () => {
+        location.href = "generatedDocs.html" + "?" + templateId;
+      };
+
+      const templateTitle = document.getElementById("currentProjectName");
+
+      let currentFontWeightBtn = document.getElementById("normalTextBtn");
+      const applyFontWeight = (id) => {
+        const fontWeightBtnsCollection =
+          document.getElementsByClassName("fontWeightBtns");
+        for (let i = 0; i < fontWeightBtnsCollection.length; i++) {
+          fontWeightBtnsCollection[i].style.backgroundColor = "green";
+          fontWeightBtnsCollection[i].style.color = "white";
+        }
+        currentFontWeightBtn = document.getElementById(id);
+        currentFontWeightBtn.style.backgroundColor = "yellow";
+        currentFontWeightBtn.style.color = "green";
+      };
+
+      let currentAlignBtn = document.getElementById("leftBtn");
+      const applyTextAlign = (id) => {
+        const textAlignBtnsCollection =
+          document.getElementsByClassName("textAlignBtns");
+        for (let i = 0; i < textAlignBtnsCollection.length; i++) {
+          textAlignBtnsCollection[i].style.backgroundColor = "green";
+          textAlignBtnsCollection[i].style.color = "white";
+        }
+        currentAlignBtn = document.getElementById(id);
+        currentAlignBtn.style.backgroundColor = "yellow";
+        currentAlignBtn.style.color = "green";
+      };
+
+      let pressedUnderline = true;
+      const applyUnderline = () => {
+        const underlineBtn = document.getElementById("underlineBtn");
+
+        if (pressedUnderline === true) {
+          underlineBtn.style.color = "green";
+          underlineBtn.style.backgroundColor = "yellow";
+          pressedUnderline = false;
+        } else {
+          underlineBtn.style.color = "white";
+          underlineBtn.style.backgroundColor = "green";
+          pressedUnderline = true;
+        }
+      };
+
+      const addElement = (event) => {
+        // document.getElementsByClassName('.addBtn') for style.color = white
+
+        const invoiceBtnsCollection =
+          document.getElementsByClassName("invoiceBtns");
+        for (let i = 0; i < invoiceBtnsCollection.length; i++) {
+          invoiceBtnsCollection[i].style.display = "block";
+          invoiceBtnsCollection[i].style.backgroundColor = "green";
+          invoiceBtnsCollection[i].style.color = "white";
+        }
+
+        const addBtnCollection = document.getElementsByClassName("addBtn");
+        for (let i = 0; i < addBtnCollection.length; i++) {
+          addBtnCollection[i].style.backgroundColor = "green";
+          addBtnCollection[i].style.color = "white";
+        }
+
+        const currentBtn = event.target
+          .closest(".invoicePart")
+          .querySelector(".addBtn");
+        pressedBtn = currentBtn;
+        currentBtn.style.backgroundColor = "yellow";
+        currentBtn.style.color = "green";
+      };
+
+      const addParagraph = (event) => {
+        // add paragraph in canvas
+        const editableLine = document.createElement("div");
+        editableLine.id = s4();
+        editableLine.classList.add("editableLine");
+
+        pressedBtn.parentElement.appendChild(editableLine);
+
+        const paragraphBtn = document.getElementById("paragraphBtn");
+        paragraphBtn.style.backgroundColor = "yellow";
+        paragraphBtn.style.color = "green";
+
+        const tableBtn = document.getElementById("tableBtn");
+        tableBtn.style.backgroundColor = "green";
+        tableBtn.style.color = "white";
+
+        const tableEditor = document.getElementById("tableEditor");
+        tableEditor.style.display = "none";
+
+        setParagraphEditor(editableLine);
+      };
+
+      let selectedLineId = "";
+
+      const setParagraphEditor = (paragraphElement) => {
+        if (selectedLineId != paragraphElement.id) {
+          if (selectedLineId) {
+            document
+              .getElementById(selectedLineId)
+              .classList.remove("selected");
+          }
+
+          selectedLineId = paragraphElement.id;
+          paragraphElement.classList.add("selected");
+        }
+
+        const tempParagraphElement = paragraphElement.cloneNode(true);
+        const spanElements = tempParagraphElement.querySelectorAll("span");
+        for (let index = 0; index < spanElements.length; index++) {
+          spanElements[index].textContent = `#${spanElements[
+            index
+          ].getAttribute("category")}/${spanElements[index].textContent}`;
+        }
+
+        const id = paragraphElement.id;
+        const fontFamily = paragraphElement.style.fontFamily;
+        const fontSize = paragraphElement.style.fontSize;
+        const text = tempParagraphElement.textContent;
+
+        const paragraphEditor = document.getElementById("paragraphEditor");
+        paragraphEditor.style.display = "inline-grid";
+
+        if (fontFamily) {
+          paragraphEditor.querySelector("#fontSelector").value = fontFamily;
+        } else {
+          paragraphEditor.querySelector("#fontSelector").value =
+            "Verdana, sans-serif";
+        }
+
+        if (fontSize) {
+          const newfontSize = fontSize.replace("px", "");
+          paragraphEditor.querySelector("#fontSizeSelector").value =
+            newfontSize;
+        } else {
+          paragraphEditor.querySelector("#fontSizeSelector").value = 8;
+        }
+
+        const paragraphText = document.getElementById("paragraphText");
+
+        paragraphText.style.fontFamily = fontFamily || "Verdana, sans-serif";
+
+        if (fontSize) {
+          const newfontSize = fontSize.replace("px", "");
+          paragraphText.style.fontSize = newfontSize;
+        } else {
+          paragraphText.style.fontSize = "8px";
+        }
+
+        paragraphText.value = text || "";
+        addClickable();
+      };
+
+      const handleTextBox = () => {
+        const fontSize = document.getElementById("fontSizeSelector").value;
+        const fontFamily = document.getElementById("fontSelector").value;
+        const paragraphText = document.getElementById("paragraphText");
+        paragraphText.style.fontSize = fontSize + "px";
+        paragraphText.style.fontFamily = fontFamily;
+      };
+      const applyParagraph = () => {
+        // luam id din editableParagraph
+        // editam in pagina dupa acel id
+
+        let paragraphText = document.getElementById("paragraphText");
+        paragraphText = paragraphText.value;
+
+        let fontSizeSelector = document.getElementById("fontSizeSelector");
+        let chosenSize = fontSizeSelector.value;
+
+        let chosenFontWeight = currentFontWeightBtn.value;
+
+        let chosenAlign = currentAlignBtn.value;
+
+        let fontSelector = document.getElementById("fontSelector");
+        let chosenFont = fontSelector.value;
+
+        const temporaryArray = paragraphText.split(" ");
+        temporaryArray.forEach((a, i) => {
+          if (a.startsWith("#")) {
+            a = a.substring(1);
+            const name = a.split("/")[0];
+            const value = a.split("/")[1];
+
+            const test = `<span class="dynamic-field" category="${name}">${value}</span>`;
+            temporaryArray[i] = test;
+          }
+        });
+
+        const editedLine = document.getElementById(selectedLineId);
+        editedLine.innerHTML = temporaryArray.join(" ");
+        editedLine.style.fontSize = chosenSize + "px";
+        editedLine.style.fontFamily = chosenFont;
+        editedLine.style.fontStyle = chosenFontWeight;
+        editedLine.style.fontWeight = chosenFontWeight;
+        editedLine.style.textAlignLast = chosenAlign;
+        if (pressedUnderline === false) {
+          editedLine.style.textDecoration = underlineBtn.value;
+        }
+      };
+
+      const addClickable = () => {
+        const editableLinesCollection =
+          document.getElementsByClassName("editableLine");
+        for (let i = 0; i < editableLinesCollection.length; i++) {
+          editableLinesCollection[i].addEventListener("click", handleLineClick);
+        }
+      };
+
+      const handleLineClick = (e) => {
+        setParagraphEditor(
+          e.target.tagName === "SPAN" ? e.target.parentElement : e.target
+        );
+        document.getElementById("paragraphEditor").style.display =
+          "inline-grid";
+        addElement(event);
+        document.getElementById("paragraphBtn").style.backgroundColor =
+          "yellow";
+        document.getElementById("paragraphBtn").style.color = "green";
+      };
+
+      let productsWithId = [];
+      let productsInfo = [];
+
+      const addTable = () => {
+        productsInfo.length = 0;
+        productsWithId.length = 0;
+        getProducts().then((getProductsQueryResult) => {
+          getProductsQueryResult.forEach((doc) => {
+            productsWithId.push({ id: doc.id, data: doc.data() });
+            productsInfo = productsWithId.filter(
+              (product) => product.data.currentUser === currentUser
+            );
+          });
+          const paragraphEditor = document.getElementById("paragraphEditor");
+          paragraphEditor.style.display = "none";
+
+          const tableEditor = document.getElementById("tableEditor");
+          tableEditor.style.display = "inline-grid";
+          tableEditor.innerHTML = "";
+
+          const tableTitle = document.createElement("h3");
+          tableTitle.textContent = "Table";
+          tableEditor.appendChild(tableTitle);
+
+          for (let i = 0; i < productsInfo.length; i++) {
+            const productOption = document.createElement("span");
+            const productOptionInput = document.createElement("input");
+            productOption.setAttribute(
+              "name",
+              productsInfo[i].data.productName
+            );
+            const productOptionLabel = document.createElement("label");
+            productOptionLabel.textContent = productsInfo[i].data.productName;
+            productOption.appendChild(productOptionInput);
+            productOption.appendChild(productOptionLabel);
+            //productOptionLabel.setAttribute('')
+            productOptionInput.setAttribute("type", "checkbox");
+            productOptionInput.setAttribute("class", "chosenProducts");
+            productOptionInput.setAttribute("id", "productOptionInput");
+            productOptionInput.setAttribute(
+              "name",
+              productsInfo[i].data.productName
+            );
+            tableEditor.appendChild(productOption);
+          }
+          const applyTableBtn = document.createElement("button");
+          applyTableBtn.className = "applyBtn";
+          applyTableBtn.textContent = "Apply";
+          applyTableBtn.addEventListener("click", applyTable);
+
+          tableEditor.appendChild(applyTableBtn);
+
+          const tableBtn = document.getElementById("tableBtn");
+          tableBtn.style.backgroundColor = "yellow";
+          tableBtn.style.color = "green";
+          const paragraphBtn = document.getElementById("paragraphBtn");
+          paragraphBtn.style.backgroundColor = "green";
+          paragraphBtn.style.color = "white";
+        });
+      };
+
+      const applyTable = () => {
+        const productOptionInputCollection =
+          document.getElementsByClassName("chosenProducts");
+        for (let i = 0; i < productOptionInputCollection.length; i++) {
+          if (productOptionInputCollection[i].checked) {
+            productOptionInputCollection[i].classList.add("checked");
+          } else {
+            productOptionInputCollection[i].classList.remove("checked");
+          }
+        }
+        selectedProds.length = 0;
+        if (document.getElementsByClassName("checked").length > 0) {
+          chosenProductsCollection = document.getElementsByClassName("checked");
+          for (let i = 0; i < chosenProductsCollection.length; i++) {
+            selectedProds.push(
+              productsInfo.filter(
+                (product) =>
+                  product.data.productName === chosenProductsCollection[i].name
+              )
+            );
+          }
+        } else {
+          chosenProductsCollection =
+            document.getElementsByClassName("chosenProducts");
+          selectedProds = productsInfo;
+        }
+
+        const table = document.createElement("table");
+
+        const headerRow = document.createElement("tr");
+        const headerNames = ["Name", "Description", "Price", "Stock"];
+
+        headerNames.forEach((headerName) => {
+          const headerCell = document.createElement("th");
+          headerCell.textContent = headerName;
+          headerRow.appendChild(headerCell);
+        });
+
+        table.appendChild(headerRow);
+
+        for (let i = 0; i < chosenProductsCollection.length; i++) {
+          selectedProds = Array.prototype.concat.apply([], selectedProds);
+          let row = document.createElement("tr");
+          row.className = "rowClass";
+          row.setAttribute("id", "rowClass-" + i);
+
+          let cells = [
+            selectedProds[i].data.productName,
+            selectedProds[i].data.productDescription,
+            selectedProds[i].data.productPrice,
+            selectedProds[i].data.productStock,
+          ];
+          cells.forEach((cellData) => {
+            const cell = document.createElement("td");
+            cell.textContent = cellData;
+            row.appendChild(cell);
+          });
+          table.appendChild(row);
+        }
+
+        pressedBtn.parentElement.appendChild(table);
+      };
+
+      const saveTemplate = () => {
+        const mainInvoice = document.getElementById("mainInvoice");
+        const templateContent = mainInvoice.innerHTML.toString();
+
+        try {
+          modifyTemplateContent(templateId, templateContent);
+          alert("Template saved successfully");
+        } catch (error) {
+          console.log(error);
+        }
+      };
+
+      const showCompanyDialog = () => {
+        const companyDialog = document.getElementById("companyDialog");
+        companyDialog.style.display = "block";
+      };
+
+      const showVendorDialog = () => {
+        const vendorDialog = document.getElementById("vendorDialog");
+        vendorDialog.style.display = "block";
+      };
+      const showDeleteDialog = () => {
+        const deleteDialog = document.getElementById("deleteDialog");
+        deleteDialog.style.display = "block";
+      };
+
+      const closeDialog = () => {
+        const deleteDialog = document.getElementById("deleteDialog");
+        deleteDialog.style.display = "none";
+        const companyDialog = document.getElementById("companyDialog");
+        companyDialog.style.display = "none";
+        const vendorDialog = document.getElementById("vendorDialog");
+        vendorDialog.style.display = "none";
+      };
+
+      const deleteTemplate = () => {
+        try {
+          deleteTemplateDB(templateId);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+    </script>
+  </body>
+</html>

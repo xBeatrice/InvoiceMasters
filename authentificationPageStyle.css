@@ -1,0 +1,134 @@
+html,
+body {
+  height: 99%;
+  margin: 0;
+}
+body{
+	font-family: helvetica, sans-serif;
+	background-image: url("background.jpg");
+	background-size: cover;
+	background-repeat: no-repeat;
+    background-position: center;
+	  
+}
+#header {
+	display:flex;
+	font-size: 46px;
+	height: 10%;
+	border-bottom: 2px solid green;
+	margin: 10px
+}
+#websiteTitle {
+	margin-bottom: 4px;
+}
+#signInDialog {
+	display: none;
+}
+#newAccDialog {
+	display: none;
+}
+#main {
+	position: absolute;
+	height:85%;
+	width: 95%;
+}
+#authentificationDialog {
+	height: 300px;
+	width: 500px;
+	border: 3px solid green;
+	border-radius: 10px;
+	position: relative;
+	top: 50%;
+    left: 50%;
+    margin: -150px 0 0 -250px;
+    text-align-last: center;
+	background-color: white;
+}
+#authDialogBtnsCase {
+	display: inline-grid;
+}
+.authDialogBtns {
+	color: white;
+	background-color: green;
+	font-size: 20px;
+	border: 2px solid green;
+	border-radius: 10px;
+	height: 60px;
+	width: 400px;
+	margin: 20px;
+}
+.authDialogBtns:hover{
+	color: green;
+	background-color: white;
+}
+#signInDialog {
+	height: 300px;
+	width: 500px;
+	border: 3px solid green;
+	border-radius: 10px;
+	position: relative;
+	top: 50%;
+    left: 50%;
+    margin: -150px 0 0 -250px;
+    text-align-last: center;
+	background-color: white;
+}
+.input {
+	height: 30px;
+	width: 400px;
+	margin: auto;
+
+}
+.passInput {
+	height: 30px;
+	width: 400px;
+	margin: auto;
+	font-family: Verdana;
+    letter-spacing: 0.125em;
+}
+#newAccDialog {
+	height: 300px;
+	width: 500px;
+	border: 3px solid green;
+	border-radius: 10px;
+	position: relative;
+	top: 50%;
+    left: 50%;
+    margin: -150px 0 0 -250px;
+    text-align-last: center;
+}
+
+#signInBtnDB {
+	color: white;
+	background-color: green;
+	border: 2px solid green;
+	border-radius: 10px;
+	height: 36px;
+	width: 100px;
+	font-size: 16px;
+	margin: auto;
+}
+
+#signInBtnDB:hover{
+	color: green;
+	background-color: white;
+}
+#newAccBtnDB {
+	color: white;
+	background-color: green;
+	border: 2px solid green;
+	border-radius: 10px;
+	height: 36px;
+	width: 130px;
+	font-size: 16px;
+	margin: auto;
+}
+#newAccBtnDB:hover{
+	color: green;
+	background-color: white;
+}
+.goBack {
+	text-decoration: underline blue;
+	color: blue;
+	cursor: pointer;
+}

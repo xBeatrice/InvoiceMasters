@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+
+<html>
+  <link rel="stylesheet" href="./generatedDocsStyle.css" />
+
+  <head>
+    <script
+      src="https://kit.fontawesome.com/bad63f900f.js"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth-compat.js"></script>
+  </head>
+
+  <script type="text/javascript" src="projectsStorageService.js"></script>
+
+  <body>
+    <div id="header">
+      <div id="websiteTitle">InvoiceMasters</div>
+      <div id="userDiv">
+        <button id="userBtn"><i class="fa-solid fa-user"></i></button> Username
+      </div>
+    </div>
+    <div id="main"></div>
+
+    <script>
+      let vendorsWithId = [];
+      let vendorsInfo = [];
+      let templateId = location.href.split("?").pop();
+      let allTemplatesId = [];
+      let currentTemplate = [];
+      let invoicePreview = "";
+      let companyData = [];
+      let companyInfo = {};
+      let companyWithId = [];
+
+      let companyName = "";
+      let companyAdress = "";
+      let companyVAT = "";
+      let companyIBAN = "";
+
+      const docsGenerator = () => {
+        vendorsWithId.length = 0;
+        vendorsInfo.length = 0;
+
+        getCompanyInfo().then((getCompaniesQueryResult) => {
+          getCompaniesQueryResult.forEach((doc) => {
+            companyWithId.push({ id: doc.id, data: doc.data() });
+            companyInfo = companyWithId.filter(
+              (project) => project.data.currentUser === currentUser
+            );
+          });
+
+          getVendors().then((getVendorsQueryResult) => {
+            getVendorsQueryResult.forEach((doc) => {
+              vendorsWithId.push({ id: doc.id, data: doc.data() });
+              vendorsInfo = vendorsWithId.filter(
+                (vendor) => vendor.data.currentUser === currentUser
+              );
+            });
+
+            for (let i = 0; i < vendorsInfo.length; i++) {
+              const docPage = document.createElement("div");
+              docPage.innerHTML = currentTemplate[0].data.content;
+
+              const spanElements = docPage.querySelectorAll("span");
+
+              const btnElements = docPage.querySelectorAll("button"); // add class for elements that should be hidden in invoice
+
+              for (let index = 0; index < btnElements.length; index++) {
+                btnElements[index].style.visibility = "hidden";
+              }
+
+              for (let index = 0; index < spanElements.length; index++) {
+                const value = spanElements[index].textContent;
+                const category = spanElements[index].attributes.category.value;
+
+                if (category === "company") {
+                  spanElements[index].textContent = companyInfo[i].data[value];
+                  docPage.classList.add("docPage");
+                  main.appendChild(docPage);
+                }
+                if (category === "vendor") {
+                  spanElements[index].textContent = vendorsInfo[i].data[value];
+                  docPage.classList.add("docPage");
+                  main.appendChild(docPage);
+                }
+              }
+            }
+          });
+        });
+      };
+
+      const templatesDB = () => {
+        getTemplates()
+          .then((getTemplatesQueryResult) => {
+            getTemplatesQueryResult.forEach((doc) => {
+              allTemplatesId.push({ id: doc.id, data: doc.data() });
+              currentTemplate = allTemplatesId.filter(
+                (template) => template.id === templateId
+              );
+            });
+          })
+          .then(docsGenerator());
+      };
+      templatesDB();
+    </script>
+  </body>
+</html>
