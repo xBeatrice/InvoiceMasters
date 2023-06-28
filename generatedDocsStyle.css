@@ -67,3 +67,12 @@ table {
 	padding: 8px;
 	text-align: left;
   }
+  #invoiceHeader {
+    height: 15%;
+  }
+  #invoiceMain {
+    height: 60%;
+  }
+  #invoiceFooter {
+    height: 15%;
+  }

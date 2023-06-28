@@ -19,7 +19,10 @@
       <div id="header">
         <div id="websiteTitle">InvoiceMasters</div>
         <div id="user">
-          <button id="userBtn"><i class="fa-solid fa-user"></i></button>
+          <button id="userBtn" onclick="toProfile()">
+            <i class="fa-solid fa-user"></i>
+          </button>
+          Username
         </div>
       </div>
 
@@ -92,6 +95,10 @@
       today = dd + "/" + mm + "/" + yyyy;
 
       let templates = [];
+
+      const toProfile = () => {
+        location.href = "profilePage.html";
+      };
 
       projectId = location.href.split("?").pop(); // ia idul proiectului pe care am intrat
 
@@ -410,10 +417,6 @@
             );
             allTemplatesDOM();
           });
-          const user = document.getElementById("user");
-          const userName = document.createElement("span");
-          userName.textContent = currentUser.split("@", 1);
-          user.appendChild(userName);
         });
       };
 

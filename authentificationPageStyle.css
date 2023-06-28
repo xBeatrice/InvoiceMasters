@@ -1,7 +1,26 @@
+html,
+body {
+  height: 99%;
+  margin: 0;
+}
 body{
 	font-family: helvetica, sans-serif;
+	background-image: url("background.jpg");
+	background-size: cover;
+	background-repeat: no-repeat;
+    background-position: center;
+	  
 }
-
+#header {
+	display:flex;
+	font-size: 46px;
+	height: 10%;
+	border-bottom: 2px solid green;
+	margin: 10px
+}
+#websiteTitle {
+	margin-bottom: 4px;
+}
 #signInDialog {
 	display: none;
 }
@@ -10,8 +29,8 @@ body{
 }
 #main {
 	position: absolute;
-	height:100%;
-	width: 100%;
+	height:85%;
+	width: 95%;
 }
 #authentificationDialog {
 	height: 300px;
@@ -23,7 +42,7 @@ body{
     left: 50%;
     margin: -150px 0 0 -250px;
     text-align-last: center;
-
+	background-color: white;
 }
 #authDialogBtnsCase {
 	display: inline-grid;
@@ -52,6 +71,7 @@ body{
     left: 50%;
     margin: -150px 0 0 -250px;
     text-align-last: center;
+	background-color: white;
 }
 .input {
 	height: 30px;

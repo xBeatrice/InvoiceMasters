@@ -19,10 +19,7 @@
     <div id="header">
       <div id="websiteTitle">InvoiceMasters</div>
       <div id="userDiv">
-        <button id="userBtn" onclick="toProfile()">
-          <i class="fa-solid fa-user"></i>
-        </button>
-        Username
+        <button id="userBtn"><i class="fa-solid fa-user"></i></button> Username
       </div>
     </div>
     <div id="main"></div>
@@ -42,14 +39,6 @@
       let companyAdress = "";
       let companyVAT = "";
       let companyIBAN = "";
-
-      const toProfile = () => {
-        location.href = "./profilePage.html";
-      };
-        const user = document.getElementById("user");
-        const userName = document.createElement("span");
-        userName.textContent = currentUser.split("@", 1);
-        user.appendChild(userName);
 
       const docsGenerator = () => {
         vendorsWithId.length = 0;
@@ -71,7 +60,7 @@
               );
             });
 
-            for (let index = 0; index < vendorsInfo.length; index++) {
+            for (let i = 0; i < vendorsInfo.length; i++) {
               const docPage = document.createElement("div");
               docPage.innerHTML = currentTemplate[0].data.content;
 
@@ -79,21 +68,21 @@
 
               const btnElements = docPage.querySelectorAll("button"); // add class for elements that should be hidden in invoice
 
-              for (let i = 0; i < btnElements.length; i++) {
-                btnElements[i].style.visibility = "hidden";
+              for (let index = 0; index < btnElements.length; index++) {
+                btnElements[index].style.visibility = "hidden";
               }
 
-              for (let j = 0; j < spanElements.length; j++) {
-                const value = spanElements[j].textContent;
-                const category = spanElements[j].attributes.category.value;
+              for (let index = 0; index < spanElements.length; index++) {
+                const value = spanElements[index].textContent;
+                const category = spanElements[index].attributes.category.value;
 
                 if (category === "company") {
-                  spanElements[j].textContent = companyInfo[0].data[value];
+                  spanElements[index].textContent = companyInfo[i].data[value];
                   docPage.classList.add("docPage");
                   main.appendChild(docPage);
                 }
                 if (category === "vendor") {
-                  spanElements[j].textContent = vendorsInfo[index].data[value];
+                  spanElements[index].textContent = vendorsInfo[i].data[value];
                   docPage.classList.add("docPage");
                   main.appendChild(docPage);
                 }

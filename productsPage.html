@@ -19,9 +19,7 @@
     <div id="header">
       <div id="websiteTitle">InvoiceMasters</div>
       <div id="userDiv">
-        <button id="userBtn" onclick="toProfile()">
-          <i class="fa-solid fa-user"></i>
-        </button>
+        <button id="userBtn"><i class="fa-solid fa-user"></i></button> Username
       </div>
     </div>
 
@@ -91,10 +89,6 @@
     </div>
 
     <script>
-      const toProfile = () => {
-        location.href = "./profilePage.html";
-      };
-
       const newProductDialog = () => {
         const productDialog = document.getElementById("newProductDialog");
         productDialog.style.display = "inline-grid";
@@ -257,10 +251,6 @@
             main.innerHTML = "";
             main.appendChild(table);
           });
-          const user = document.getElementById("userDiv");
-          const userName = document.createElement("span");
-          userName.textContent = currentUser.split("@", 1);
-          user.appendChild(userName);
         });
       };
 

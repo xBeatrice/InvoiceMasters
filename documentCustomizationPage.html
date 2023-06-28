@@ -17,20 +17,18 @@
     <div id="header">
       <div id="websiteTitle">InvoiceMasters</div>
       <div id="user">
-        <button id="userBtn" onclick="toProfile()">
-          <i class="fa-solid fa-user"></i>
-        </button>
+        <button id="userBtn"><i class="fa-solid fa-user"></i></button> Username
       </div>
     </div>
 
-    <!-- <div id="categories">
+    <div id="categories">
       <button id="projectsBtn" class="categoriesBtns">Projects</button>
       <button id="pendingBtn" class="categoriesBtns">Pending</button>
       <button id="processedBtn" class="categoriesBtns">Processed</button>
-    </div> -->
+    </div>
 
     <div id="currentProject">
-      <div id="currentTemplateName"></div>
+      <div id="currentProjectName"></div>
       <div id="projectBtnsDiv">
         <button id="saveBtn" class="projectBtns" onclick="saveTemplate()">
           Save <i class="fa-solid fa-floppy-disk"></i>
@@ -314,10 +312,6 @@
       let selectedProds = [];
       let chosenProductsCollection = [];
 
-      const toProfile = () => {
-        location.href = "./profilePage.html";
-      };
-
       const insertAtCursor = (name, value) => {
         const text = `#${name}/${value}`;
 
@@ -354,23 +348,21 @@
         if (currentTemplate[0].data.content != undefined) {
           const mainInvoice = document.getElementById("mainInvoice");
           mainInvoice.innerHTML = currentTemplate[0].data.content;
+          templateTitle.textContent =
+            "Template: " + currentTemplate[0].data.name;
         }
         const addBtnCollection = document.getElementsByClassName("addBtn");
         for (let i = 0; i < addBtnCollection.length; i++) {
           addBtnCollection[i].addEventListener("click", addElement);
         }
-        const templateName = document.getElementById("currentTemplateName");
-        templateName.textContent =
-          "Template name: " + currentTemplate[0].data.name;
-        const user = document.getElementById("user");
-        const userName = document.createElement("span");
-        userName.textContent = currentUser.split("@", 1);
-        user.appendChild(userName);
+        templateTitle.textContent = "Template: " + currentTemplate[0].data.name;
       };
 
       const previewTemplate = () => {
         location.href = "generatedDocs.html" + "?" + templateId;
       };
+
+      const templateTitle = document.getElementById("currentProjectName");
 
       let currentFontWeightBtn = document.getElementById("normalTextBtn");
       const applyFontWeight = (id) => {
@@ -449,6 +441,13 @@
         const paragraphBtn = document.getElementById("paragraphBtn");
         paragraphBtn.style.backgroundColor = "yellow";
         paragraphBtn.style.color = "green";
+
+        const tableBtn = document.getElementById("tableBtn");
+        tableBtn.style.backgroundColor = "green";
+        tableBtn.style.color = "white";
+
+        const tableEditor = document.getElementById("tableEditor");
+        tableEditor.style.display = "none";
 
         setParagraphEditor(editableLine);
       };
@@ -585,9 +584,8 @@
       let productsInfo = [];
 
       const addTable = () => {
-        productsInfo = [];
-        productsWithId = [];
-
+        productsInfo.length = 0;
+        productsWithId.length = 0;
         getProducts().then((getProductsQueryResult) => {
           getProductsQueryResult.forEach((doc) => {
             productsWithId.push({ id: doc.id, data: doc.data() });
@@ -595,9 +593,13 @@
               (product) => product.data.currentUser === currentUser
             );
           });
+          const paragraphEditor = document.getElementById("paragraphEditor");
+          paragraphEditor.style.display = "none";
 
           const tableEditor = document.getElementById("tableEditor");
+          tableEditor.style.display = "inline-grid";
           tableEditor.innerHTML = "";
+
           const tableTitle = document.createElement("h3");
           tableTitle.textContent = "Table";
           tableEditor.appendChild(tableTitle);
@@ -621,14 +623,21 @@
               "name",
               productsInfo[i].data.productName
             );
-
             tableEditor.appendChild(productOption);
           }
           const applyTableBtn = document.createElement("button");
           applyTableBtn.className = "applyBtn";
           applyTableBtn.textContent = "Apply";
           applyTableBtn.addEventListener("click", applyTable);
+
           tableEditor.appendChild(applyTableBtn);
+
+          const tableBtn = document.getElementById("tableBtn");
+          tableBtn.style.backgroundColor = "yellow";
+          tableBtn.style.color = "green";
+          const paragraphBtn = document.getElementById("paragraphBtn");
+          paragraphBtn.style.backgroundColor = "green";
+          paragraphBtn.style.color = "white";
         });
       };
 
@@ -638,10 +647,11 @@
         for (let i = 0; i < productOptionInputCollection.length; i++) {
           if (productOptionInputCollection[i].checked) {
             productOptionInputCollection[i].classList.add("checked");
+          } else {
+            productOptionInputCollection[i].classList.remove("checked");
           }
         }
         selectedProds.length = 0;
-
         if (document.getElementsByClassName("checked").length > 0) {
           chosenProductsCollection = document.getElementsByClassName("checked");
           for (let i = 0; i < chosenProductsCollection.length; i++) {
@@ -657,6 +667,7 @@
             document.getElementsByClassName("chosenProducts");
           selectedProds = productsInfo;
         }
+
         const table = document.createElement("table");
 
         const headerRow = document.createElement("tr");
@@ -669,6 +680,7 @@
         });
 
         table.appendChild(headerRow);
+
         for (let i = 0; i < chosenProductsCollection.length; i++) {
           selectedProds = Array.prototype.concat.apply([], selectedProds);
           let row = document.createElement("tr");
@@ -688,6 +700,7 @@
           });
           table.appendChild(row);
         }
+
         pressedBtn.parentElement.appendChild(table);
       };
 

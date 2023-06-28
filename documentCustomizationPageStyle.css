@@ -352,6 +352,7 @@ body{
 }
 #tableEditor {
 	display: inline-grid;
+	padding: 12px;
 }
 table {
 	margin-top: 10px;
