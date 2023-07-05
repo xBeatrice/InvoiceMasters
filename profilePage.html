@@ -77,6 +77,16 @@
       </button>
     </div>
 
+    <div id="passChangeDialog">
+      <button class="closeBtn" onclick="closeDialog()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <p class="text">Are you sure you want to change your password?</p>
+      <button id="changePassBtnDB" onclick="resetPassword(); closeDialog()">
+        <i class="fa-solid fa-right-from-bracket"></i> Change Password
+      </button>
+    </div>
+
     <script>
       const addNewCompany = () => {
         const companyName = document.getElementById("companyName").value;
@@ -169,9 +179,13 @@
       const closeDialog = () => {
         const logOutDialog = document.getElementById("logOutDialog");
         logOutDialog.style.display = "none";
+        passChangeDialog.style.display = "none";
       };
 
-      const goToChangePass = () => {};
+      const goToChangePass = () => {
+        const passChangeDialog = document.getElementById("passChangeDialog");
+        passChangeDialog.style.display = "grid";
+      };
     </script>
   </body>
 </html>
