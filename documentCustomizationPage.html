@@ -17,15 +17,18 @@
     <div id="header">
       <div id="websiteTitle">InvoiceMasters</div>
       <div id="user">
-        <button id="userBtn"><i class="fa-solid fa-user"></i></button> Username
+        <button id="userBtn" onclick="toProfile()">
+          <i class="fa-solid fa-user"></i>
+        </button>
+        Username
       </div>
     </div>
 
-    <div id="categories">
+    <!-- <div id="categories">
       <button id="projectsBtn" class="categoriesBtns">Projects</button>
       <button id="pendingBtn" class="categoriesBtns">Pending</button>
       <button id="processedBtn" class="categoriesBtns">Processed</button>
-    </div>
+    </div> -->
 
     <div id="currentProject">
       <div id="currentProjectName"></div>
@@ -311,6 +314,10 @@
       const currentParagraph = {};
       let selectedProds = [];
       let chosenProductsCollection = [];
+
+      const toProfile = () => {
+        location.href = "profilePage.html";
+      };
 
       const insertAtCursor = (name, value) => {
         const text = `#${name}/${value}`;

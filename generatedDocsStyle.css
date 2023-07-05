@@ -37,6 +37,7 @@ body{
 }
 
 .docPage{
+  padding: 10px 30px 10px 30px;
   margin: auto;
   margin-top: 50px;
   margin-bottom:10px;
