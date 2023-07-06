@@ -4,6 +4,8 @@
   <link rel="stylesheet" href="./generatedDocsStyle.css" />
 
   <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
+
     <script
       src="https://kit.fontawesome.com/bad63f900f.js"
       crossorigin="anonymous"
@@ -24,6 +26,9 @@
         </button>
         Username
       </div>
+    </div>
+    <div>
+      <button onclick="generatePDF()" id="generateBtn">Generate PDF</button>
     </div>
     <div id="main"></div>
 
@@ -147,6 +152,30 @@
           .then(docsGenerator());
       };
       templatesDB();
+
+      function generatePDF() {
+        // Get the collection of div elements with class "docPage"
+        const docCollection = document.getElementsByClassName("docPage");
+
+        // Convert the HTMLCollection to an array
+        const docArray = Array.from(docCollection);
+
+        docArray.forEach((doc) => {
+          // Get the content of the current div element
+          const divContent = doc;
+
+          // Create the configuration for html2pdf
+          const config = {
+            filename: "invoice.pdf",
+            image: { type: "jpeg", quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+          };
+
+          // Generate the PDF
+          html2pdf().set(config).from(divContent).save();
+        });
+      }
     </script>
   </body>
 </html>
