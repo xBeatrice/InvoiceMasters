@@ -214,6 +214,20 @@
           >
             Add vendor data <i class="fa-solid fa-people-roof"></i>
           </button>
+          <button
+            id="companyInvoiceNo"
+            class="invoiceNoBtn"
+            onclick="insertAtCursor('invoiceNo', this.id)"
+          >
+            Add invoice number <i class="fa-solid fa-arrow-up-1-9"></i>
+          </button>
+          <button
+            id="currentDateBtn"
+            class="currentDateBtn"
+            onclick="insertAtCursor('currentDate', 'currentDate')"
+          >
+            Add current date <i class="fa-solid fa-arrow-up-1-9"></i>
+          </button>
           <label for="paragraphText"> Write here: </label>
           <input type="text" id="paragraphText" class="textBox" />
           <button class="applyBtn" onclick="applyParagraph()">Apply</button>
@@ -314,7 +328,8 @@
       const currentParagraph = {};
       let selectedProds = [];
       let chosenProductsCollection = [];
-
+      let companyWithId = [];
+      let companyInfo = [];
       const toProfile = () => {
         location.href = "profilePage.html";
       };
@@ -335,6 +350,18 @@
         } else {
           myField.value += text;
         }
+      };
+
+      const addInvoiceNo = () => {
+        getCompanyInfo().then((getCompaniesQueryResult) => {
+          getCompaniesQueryResult.forEach((doc) => {
+            companyWithId.push({ id: doc.id, data: doc.data() });
+            companyInfo = companyWithId.filter(
+              (project) => project.data.currentUser === currentUser
+            );
+          });
+          insertAtCursor("invoiceNo", companyInvoiceNo);
+        });
       };
 
       const templatesDB = () => {

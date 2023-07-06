@@ -133,7 +133,8 @@ const newCompany = (
   companyAdress,
   companyVAT,
   companyIBAN,
-  currentUser
+  currentUser,
+  companyInvoiceNo
 ) => {
   return db
     .collection("companyInfo")
@@ -143,6 +144,7 @@ const newCompany = (
       companyVAT,
       companyIBAN,
       currentUser,
+      companyInvoiceNo,
     })
     .then((queryResult) =>
       console.log("Document written with ID: ", queryResult.id)
@@ -233,13 +235,26 @@ const updateCompanyInfo = async (
   adress,
   VAT,
   IBAN,
-  currentUser
+  currentUser,
+  companyInvoiceNo
 ) => {
   db.collection("companyInfo").doc(companyId).set({
     companyName: name,
     companyAdress: adress,
     companyVAT: VAT,
     companyIBAN: IBAN,
+    currentUser: currentUser,
+    companyInvoiceNo: companyInvoiceNo,
+  });
+};
+
+const updateCompanyInvoiceNo = async (companyId, companyInvoiceNo) => {
+  db.collection("companyInfo").doc(companyId).set({
+    companyInvoiceNo: companyInvoiceNo,
+    companyName: companyName,
+    companyAdress: companyAdress,
+    companyVAT: companyVAT,
+    companyIBAN: companyIBAN,
     currentUser: currentUser,
   });
 };

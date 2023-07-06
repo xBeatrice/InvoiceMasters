@@ -43,8 +43,32 @@
       let companyVAT = "";
       let companyIBAN = "";
 
+      let invoiceNumber = "";
+      var today = new Date();
+
       const toProfile = () => {
         location.href = "profilePage.html";
+      };
+
+      const addNewCompanyInvoiceNo = (companyId, companyInvoiceNo) => {
+        const name = companyInfo[0].data.companyName;
+        const adress = companyInfo[0].data.companyAdress;
+        const VAT = companyInfo[0].data.companyVAT;
+        const IBAN = companyInfo[0].data.companyIBAN;
+
+        try {
+          updateCompanyInfo(
+            companyId,
+            name,
+            adress,
+            VAT,
+            IBAN,
+            currentUser,
+            companyInvoiceNo + 1
+          );
+        } catch (error) {
+          console.log(error);
+        }
       };
 
       const docsGenerator = () => {
@@ -82,7 +106,17 @@
               for (let index = 0; index < spanElements.length; index++) {
                 const value = spanElements[index].textContent;
                 const category = spanElements[index].attributes.category.value;
-
+                if (category === "invoiceNo") {
+                  invoiceNumber = companyInfo[0].data[value] + i;
+                  spanElements[index].textContent = invoiceNumber;
+                  docPage.classList.add("docPage");
+                  main.appendChild(docPage);
+                }
+                if (category === "currentDate") {
+                  spanElements[index].textContent = today;
+                  docPage.classList.add("docPage");
+                  main.appendChild(docPage);
+                }
                 if (category === "company") {
                   spanElements[index].textContent = companyInfo[0].data[value];
                   docPage.classList.add("docPage");
@@ -95,6 +129,7 @@
                 }
               }
             }
+            addNewCompanyInvoiceNo(companyWithId[0].id, invoiceNumber);
           });
         });
       };

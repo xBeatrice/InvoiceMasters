@@ -96,6 +96,7 @@
         const companyAdress = document.getElementById("companyAdress").value;
         const companyVAT = document.getElementById("companyVAT").value;
         const companyIBAN = document.getElementById("companyIBAN").value;
+        const companyInvoiceNo = 1;
 
         try {
           newCompany(
@@ -117,9 +118,18 @@
         const adress = document.getElementById("companyAdress").value;
         const VAT = document.getElementById("companyVAT").value;
         const IBAN = document.getElementById("companyIBAN").value;
+        const companyInvoiceNo = companyInfo[0].data.companyInvoiceNo;
 
         try {
-          updateCompanyInfo(companyId, name, adress, VAT, IBAN, currentUser);
+          updateCompanyInfo(
+            companyId,
+            name,
+            adress,
+            VAT,
+            IBAN,
+            currentUser,
+            companyInvoiceNo
+          );
           alert("Updated Successfully");
         } catch (error) {
           console.log(error);
